@@ -18,6 +18,7 @@ class BookscraperPipeline:
             if feild_name != 'description':
                 value = adapter.get(feild_name)
                 adapter[feild_name] = value.strip()
+        
         ## Category & Product Type --> switch to lowercase
         lowercase_keys = ['catagory', 'product_type']
         for lowercase_key in lowercase_keys:
@@ -65,3 +66,71 @@ class BookscraperPipeline:
 
 
         return item
+    
+
+import mysql.connector
+
+class SaveToMySQLPipeLine:
+    def __init__(self):
+        self.conn = mysql.connector.connect(
+            host = 'localhost',
+            user = 'bookuser',
+            password = 'secretpass',
+            database = 'books' 
+        )
+        ## Create cursor, to excuate comands
+        self.cur = self.conn.cursor()
+        # Create table if it does not exist
+        self.cur.execute("""
+            CREATE TABLE IF NOT EXISTS books (
+                id int NOT NULL AUTO_INCREMENT,
+                url VARCHAR(225),
+                title text,
+                upc VARCHAR(255),
+                product_type VARCHAR(225),
+                price_excl_tax DECIMAL,
+                price_incl_tax DECIMAL,
+                tax DECIMAL,
+                availability INTEGER,
+                num_reviews INTEGER,
+                stars INTEGER,
+                catagory VARCHAR(225),
+                description TEXT,
+                price DECIMAL,
+                PRIMARY KEY (id)
+            )
+        """)
+    def process_item(self, item, spider):
+        # Inserting the scraped data into the 'books' table
+        self.cur.execute("""
+            INSERT INTO books (
+                url, title, upc, product_type, price_excl_tax, price_incl_tax,
+                tax, availability, num_reviews, stars, catagory, description, price
+            ) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            item.get('url'),
+            item.get('title'),
+            item.get('upc'),
+            item.get('product_type'),
+            item.get('price_excl_tax'),
+            item.get('price_incl_tax'),
+            item.get('tax'),
+            item.get('availability'),
+            item.get('num_reviews'),
+            item.get('stars'),
+            item.get('catagory'),
+            item.get('description'),
+            item.get('price'),
+        ))
+
+    # Commit the transaction to save the data to the database
+        self.conn.commit()
+        return item
+
+    def close_spider(self, spider):
+        ## Close cursor & connection to database
+        self.cur.close()
+        self.conn.close()    
+        
+
