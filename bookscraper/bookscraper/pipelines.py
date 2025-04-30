@@ -69,14 +69,18 @@ class BookscraperPipeline:
     
 
 import mysql.connector
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 class SaveToMySQLPipeLine:
     def __init__(self):
         self.conn = mysql.connector.connect(
-            host = 'localhost',
-            user = 'bookuser',
-            password = 'secretpass',
-            database = 'books' 
+        host=os.getenv("MYSQL_HOST"),
+        user=os.getenv("MYSQL_USER"),
+        password=os.getenv("MYSQL_PASSWORD"),
+        database=os.getenv("MYSQL_DATABASE")
         )
         ## Create cursor, to excuate comands
         self.cur = self.conn.cursor()
