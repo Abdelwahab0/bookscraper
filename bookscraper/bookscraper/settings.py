@@ -15,7 +15,14 @@ NEWSPIDER_MODULE = "bookscraper.spiders"
 FEEDS = {
     'bookdata.json': {'format': 'json'}
 }
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
+SCRAPEOPS_API_KEY = os.getenv('SCRAPEOPS_API_KEY')
+SCRAPEOPS_FAKE_USER_AGENT_ENDPOINT = os.getenv('SCRAPEOPS_FAKE_USER_AGENT_ENDPOINT')
+SCRAPEOPS_FAKE_USER_AGENT_ENABLED = True
+SCRAPEOPS_NUM_RESULTS = 50
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = "bookscraper (+http://www.yourdomain.com)"
@@ -54,9 +61,10 @@ ROBOTSTXT_OBEY = True
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    "bookscraper.middlewares.BookscraperDownloaderMiddleware": 543,
-#}
+DOWNLOADER_MIDDLEWARES = {
+    #"bookscraper.middlewares.BookscraperDownloaderMiddleware": 543,
+    "bookscraper.middlewares.ScrapeOpsFakeUserAgentMiddleware": 400, 
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -68,7 +76,7 @@ ROBOTSTXT_OBEY = True
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     "bookscraper.pipelines.BookscraperPipeline": 300,
-    "bookscraper.pipelines.SaveToMySQLPipeLine": 400,
+    #"bookscraper.pipelines.SaveToMySQLPipeLine": 400,
 
 }
 
