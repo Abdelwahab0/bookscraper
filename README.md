@@ -6,6 +6,7 @@ This project scrapes book data from [books.tobscraped.com](https://books.tobscra
 
 - Scrapes book details from a specified website.
 - Uses Scrapy for web scraping and MySQL for data storage.
+- Integrates with ScrapeOps Fake User-Agent API for rotating user agents, improving request anonymity and reducing blocks.
 - The database credentials are securely handled using environment variables stored in a `.env` file.
 - Data includes information like book title, URL, price, category, reviews, and more.
 
